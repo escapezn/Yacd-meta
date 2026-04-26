@@ -107,10 +107,7 @@ export function fetchLogs(apiConfig: LogsAPIConfig, appendLog: AppendLogFn) {
 }
 
 export function stop() {
-  if (ws) {
-    ws.close();
-    fetched = false;
-  }
+  ws.close();
   if (controller) controller.abort();
 }
 
@@ -149,6 +146,6 @@ function fetchLogsWithFetch(apiConfig: LogsAPIConfig, appendLog: AppendLogFn) {
 
       // eslint-disable-next-line no-console
       console.log('GET /logs error:', err.message);
-    },
+    }
   );
 }

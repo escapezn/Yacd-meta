@@ -35,9 +35,6 @@ export function useLogsPage({
 
   useEffect(() => {
     fetchLogs({ ...apiConfig, logLevel }, appendLogInternal);
-    return () => {
-      stopLogs();
-    };
   }, [apiConfig, logLevel, appendLogInternal]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
