@@ -1,0 +1,1 @@
+import{j as n,i as u,R as e}from"./index-B6RdalbH.js";const a="_input_1indo_1",i={input:a},{useState:o,useRef:p,useEffect:r,useCallback:f}=e;function x({className:t,...s}){return n.jsx("input",{className:u(i.input,t),...s})}export{x as I};

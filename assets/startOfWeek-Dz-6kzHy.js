@@ -1,0 +1,1 @@
+import{t as c,k as O}from"./en-US-BB5rOlIm.js";function k(o,e){const s=O(),a=e?.weekStartsOn??e?.locale?.options?.weekStartsOn??s.weekStartsOn??s.locale?.options?.weekStartsOn??0,t=c(o,e?.in),n=t.getDay(),r=(n<a?7:0)+n-a;return t.setDate(t.getDate()-r),t.setHours(0,0,0,0),t}export{k as s};
