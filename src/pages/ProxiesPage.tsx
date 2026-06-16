@@ -8,8 +8,10 @@ import {
   getCollapsibleIsOpen,
   getHideUnavailableProxies,
   getLatencyTestUrl,
+  getLatencyTestTimeout,
   getProxiesLayout,
   getProxySortBy,
+  getProxyGroupByProvider,
 } from '~/store/app';
 import {
   getDelay,
@@ -25,12 +27,26 @@ const getAppConfig = createSelector(
   getHideUnavailableProxies,
   getAutoCloseOldConns,
   getProxiesLayout,
-  (proxySortBy, hideUnavailableProxies, autoCloseOldConns, proxiesLayout) => ({
+  getProxyGroupByProvider,
+  getLatencyTestUrl,
+  getLatencyTestTimeout,
+  (
     proxySortBy,
     hideUnavailableProxies,
     autoCloseOldConns,
     proxiesLayout,
-  })
+    proxyGroupByProvider,
+    latencyTestUrl,
+    latencyTestTimeout,
+  ) => ({
+    proxySortBy,
+    hideUnavailableProxies,
+    autoCloseOldConns,
+    proxiesLayout,
+    proxyGroupByProvider,
+    latencyTestUrl,
+    latencyTestTimeout,
+  }),
 );
 
 const mapState = (state: State) => ({
@@ -39,7 +55,6 @@ const mapState = (state: State) => ({
   proxies: getProxies(state),
   proxyProviders: getProxyProviders(state),
   delay: getDelay(state),
-  latencyTestUrl: getLatencyTestUrl(state),
   collapsibleIsOpen: getCollapsibleIsOpen(state),
   showModalClosePrevConns: getShowModalClosePrevConns(state),
   appConfig: getAppConfig(state),

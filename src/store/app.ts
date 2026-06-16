@@ -16,12 +16,14 @@ export const getClashAPIConfigs = (s: State) => s.app.clashAPIConfigs;
 export const getTheme = (s: State) => s.app.theme;
 export const getSelectedChartStyleIndex = (s: State) => s.app.selectedChartStyleIndex;
 export const getLatencyTestUrl = (s: State) => s.app.latencyTestUrl;
+export const getLatencyTestTimeout = (s: State) => s.app.latencyTestTimeout;
 export const getCollapsibleIsOpen = (s: State) => s.app.collapsibleIsOpen;
 export const getProxySortBy = (s: State) => s.app.proxySortBy;
 export const getHideUnavailableProxies = (s: State) => s.app.hideUnavailableProxies;
 export const getAutoCloseOldConns = (s: State) => s.app.autoCloseOldConns;
 export const getLogStreamingPaused = (s: State) => s.app.logStreamingPaused;
 export const getProxiesLayout = (s: State) => s.app.proxiesLayout;
+export const getProxyGroupByProvider = (s: State) => s.app.proxyGroupByProvider;
 
 const saveStateDebounced = debounce(saveState, 600);
 
@@ -165,6 +167,7 @@ const defaultState: StateApp = {
   clashAPIConfigs: [defaultClashAPIConfig],
 
   latencyTestUrl: 'http://www.gstatic.com/generate_204',
+  latencyTestTimeout: 5000,
   selectedChartStyleIndex: 0,
   theme: 'auto',
 
@@ -176,6 +179,7 @@ const defaultState: StateApp = {
   autoCloseOldConns: true,
   logStreamingPaused: false,
   proxiesLayout: 'single',
+  proxyGroupByProvider: false,
 };
 
 function parseConfigQueryString() {

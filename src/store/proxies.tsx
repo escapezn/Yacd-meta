@@ -17,7 +17,7 @@ import { ClashAPIConfig } from '~/types';
 import * as connAPI from '../api/connections';
 import * as proxiesAPI from '../api/proxies';
 
-import { getAutoCloseOldConns, getLatencyTestUrl } from './app';
+import { getAutoCloseOldConns, getLatencyTestTimeout, getLatencyTestUrl } from './app';
 
 export const initialState: StateProxies = {
   proxies: {},
@@ -61,9 +61,16 @@ export function fetchProxies(apiConfig: ClashAPIConfig) {
     ]);
 
     const { providers: proxyProviders, proxies: providerProxies } = formatProxyProviders(
-      providersData.providers
+      providersData.providers,
     );
     const proxies = { ...providerProxies, ...proxiesData.proxies };
+    // providerProxies has providerName set, but proxiesData.proxies overwrites those entries,
+    // losing providerName. Restore it for all proxies that came from a provider.
+    for (const name of Object.keys(providerProxies)) {
+      if (proxies[name]) {
+        proxies[name] = { ...proxies[name], providerName: providerProxies[name].providerName };
+      }
+    }
     const [groupNames, proxyNames] = retrieveGroupNamesFrom(proxies);
 
     const delayPrev = getDelay(getState());
@@ -143,7 +150,7 @@ function updateDelayEntry(
   dispatch: DispatchFn,
   getState: GetStateFn,
   name: string,
-  patch: { number?: number; error?: string; testing?: boolean; updatedAt?: number }
+  patch: { number?: number; error?: string; testing?: boolean; updatedAt?: number },
 ) {
   const delayPrev = getDelay(getState());
   const prev = delayPrev[name] || {};
@@ -161,7 +168,7 @@ function updateDelayEntry(
 async function closeGroupConns(
   apiConfig: ClashAPIConfig,
   groupName: string,
-  exceptionItemName: string
+  exceptionItemName: string,
 ) {
   const res = await connAPI.fetchConns(apiConfig);
   if (!res.ok) {
@@ -202,7 +209,7 @@ async function switchProxyImpl(
   getState: GetStateFn,
   apiConfig: ClashAPIConfig,
   groupName: string,
-  itemName: string
+  itemName: string,
 ) {
   try {
     const res = await proxiesAPI.requestToSwitchProxy(apiConfig, groupName, itemName);
@@ -241,7 +248,7 @@ function closeModalClosePrevConns() {
 function closePrevConns(
   apiConfig: ClashAPIConfig,
   proxies: ProxiesMapping,
-  switchTo: SwitchProxyCtxItem
+  switchTo: SwitchProxyCtxItem,
 ) {
   // we must have fetched the proxies before
   // so the proxies here is fresh
@@ -292,7 +299,8 @@ function requestDelayForProxyOnce(apiConfig: ClashAPIConfig, name: string) {
     let delayNumber: number | undefined;
     try {
       const latencyTestUrl = getLatencyTestUrl(getState());
-      const res = await proxiesAPI.requestDelayForProxy(apiConfig, name, latencyTestUrl);
+      const latencyTestTimeout = getLatencyTestTimeout(getState());
+      const res = await proxiesAPI.requestDelayForProxy(apiConfig, name, latencyTestUrl, latencyTestTimeout);
       if (res.ok === false) {
         error = res.statusText;
       }
@@ -356,9 +364,10 @@ export function healthcheckProxy(apiConfig: ClashAPIConfig, name: string) {
       const proxy = getProxies(getState())[name];
       const providerName = proxy?.providerName;
       const latencyTestUrl = getLatencyTestUrl(getState());
+      const latencyTestTimeout = getLatencyTestTimeout(getState());
       const res = providerName
-        ? await proxiesAPI.healthcheckProviderProxy(apiConfig, providerName, name)
-        : await proxiesAPI.requestDelayForProxy(apiConfig, name, latencyTestUrl);
+        ? await proxiesAPI.healthcheckProviderProxy(apiConfig, providerName, name, latencyTestUrl, latencyTestTimeout)
+        : await proxiesAPI.requestDelayForProxy(apiConfig, name, latencyTestUrl, latencyTestTimeout);
       if (res.ok === false) {
         error = res.statusText;
       }
